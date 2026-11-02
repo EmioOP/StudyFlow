@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
+import PwaSetup from "@/components/PwaSetup";
 
 export const metadata: Metadata = {
   title: "StudyFlow",
@@ -12,7 +13,7 @@ export const viewport: Viewport = { themeColor: "#6366f1", width: "device-width"
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>{children}<PwaSetup /></body>
     </html>
   );
 }
