@@ -4,6 +4,7 @@ import Shell from "@/components/Shell";
 import { supabase } from "@/lib/supabase";
 import type { Session, Subject } from "@/lib/types";
 import { todayStr } from "@/lib/dates";
+import { AMBIENTS, sound, type Ambient } from "@/lib/sound";
 
 type Mode = "focus" | "break";
 
@@ -16,6 +17,41 @@ function Timer() {
   const [left, setLeft] = useState(25 * 60);
   const [running, setRunning] = useState(false);
   const endAt = useRef<number>(0);
+  const [tickOn, setTickOn] = useState(false); const [tickVol, setTickVol] = useState(0.5);
+  const [ambient, setAmbient] = useState<Ambient>("off"); const [ambVol, setAmbVol] = useState(0.5);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+
+  // remember sound settings on this device
+  useEffect(() => {
+    try {
+      const p = JSON.parse(localStorage.getItem("sf-sound") || "{}");
+      if (typeof p.tickOn === "boolean") setTickOn(p.tickOn);
+      if (typeof p.tickVol === "number") setTickVol(p.tickVol);
+      if (AMBIENTS.some((a) => a.id === p.ambient)) setAmbient(p.ambient);
+      if (typeof p.ambVol === "number") setAmbVol(p.ambVol);
+    } catch {}
+    setPrefsLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    try { localStorage.setItem("sf-sound", JSON.stringify({ tickOn, tickVol, ambient, ambVol })); } catch {}
+  }, [prefsLoaded, tickOn, tickVol, ambient, ambVol]);
+
+  // ticking during focus
+  useEffect(() => {
+    if (!running || mode !== "focus" || !tickOn) return;
+    const id = setInterval(() => sound.tick(tickVol), 1000);
+    return () => clearInterval(id);
+  }, [running, mode, tickOn, tickVol]);
+
+  // background sound while the timer runs (focus and break)
+  useEffect(() => {
+    if (running && ambient !== "off") sound.setAmbient(ambient, ambVol);
+    else sound.fadeOutAmbient();
+    return () => sound.fadeOutAmbient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running, ambient]);
+  useEffect(() => { sound.setAmbientVolume(ambVol); }, [ambVol]);
 
   const load = useCallback(async () => {
     const sb = supabase();
@@ -38,7 +74,8 @@ function Timer() {
       setLeft(r);
       if (r === 0) {
         setRunning(false);
-        try { navigator.vibrate?.(300); new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=").play().catch(() => {}); } catch {}
+        try { navigator.vibrate?.(300); } catch {}
+        sound.chime();
         finish(mode, focusMin);
         const next: Mode = mode === "focus" ? "break" : "focus";
         setMode(next); setLeft((next === "focus" ? focusMin : breakMin) * 60);
@@ -47,7 +84,7 @@ function Timer() {
     return () => clearInterval(id);
   }, [running, mode, focusMin, breakMin, finish]);
 
-  const start = () => { endAt.current = Date.now() + left * 1000; setRunning(true); };
+  const start = () => { sound.unlock(); endAt.current = Date.now() + left * 1000; setRunning(true); };
   const stopEarly = async () => {
     setRunning(false);
     if (mode === "focus") {
@@ -78,6 +115,27 @@ function Timer() {
         <div className="flex justify-center gap-4 text-xs text-slate-500">
           <label>Focus <input type="number" min={1} className="input !inline-block !w-16" value={focusMin} disabled={running} onChange={(e) => { setFocusMin(+e.target.value || 25); if (mode === "focus") setLeft((+e.target.value || 25) * 60); }} /> min</label>
           <label>Break <input type="number" min={1} className="input !inline-block !w-16" value={breakMin} disabled={running} onChange={(e) => { setBreakMin(+e.target.value || 5); if (mode === "break") setLeft((+e.target.value || 5) * 60); }} /> min</label>
+        </div>
+      </div>
+
+      <div className="card space-y-4">
+        <h2 className="font-semibold">Sounds</h2>
+        <div className="space-y-2">
+          <label className="flex items-center justify-between text-sm">
+            <span>Clock ticking <span className="text-xs text-slate-500">(during focus)</span></span>
+            <input type="checkbox" className="h-5 w-5 accent-indigo-500" checked={tickOn} onChange={(e) => { sound.unlock(); setTickOn(e.target.checked); if (e.target.checked) sound.tick(tickVol); }} />
+          </label>
+          {tickOn && <input type="range" min={0.1} max={1} step={0.05} value={tickVol} onChange={(e) => setTickVol(+e.target.value)} className="w-full accent-indigo-500" aria-label="Tick volume" />}
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span>Background</span>
+            <select className="input !w-auto" value={ambient} onChange={(e) => { sound.unlock(); setAmbient(e.target.value as Ambient); }}>
+              {AMBIENTS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
+            </select>
+          </div>
+          {ambient !== "off" && <input type="range" min={0.05} max={1} step={0.05} value={ambVol} onChange={(e) => setAmbVol(+e.target.value)} className="w-full accent-indigo-500" aria-label="Background volume" />}
+          {ambient !== "off" && <p className="text-xs text-slate-500">Plays while the timer is running. Keep the screen on and the tab open: phones may pause sound when the screen locks.</p>}
         </div>
       </div>
       <section>
