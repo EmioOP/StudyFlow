@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/Icons";
 
 type InstallEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
@@ -47,7 +48,7 @@ export default function PwaSetup() {
             <div className="text-xs text-slate-500">{installEvt ? "Add it to your home screen for quick access." : "Tap Share, then “Add to Home Screen”."}</div>
           </div>
           {installEvt && <button className="btn !px-3" onClick={async () => { await installEvt.prompt(); const r = await installEvt.userChoice; if (r.outcome === "accepted") setHidden(true); setInstallEvt(null); }}>Install</button>}
-          <button className="text-slate-400" aria-label="Dismiss" onClick={dismiss}>✕</button>
+          <button className="text-slate-400" aria-label="Dismiss" onClick={dismiss}><Icon name="close" size={18} /></button>
         </div>
       )}
     </>

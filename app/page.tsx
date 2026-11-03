@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import type { Exam, Session, Subject, Topic } from "@/lib/types";
 import { dailyPlan, percent, nextRevisionDate, MAX_REVISIONS } from "@/lib/progress";
 import { daysUntil, fmtDate, todayStr } from "@/lib/dates";
+import { Check } from "@/components/Check";
 
 function Dashboard() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -80,7 +81,7 @@ function Dashboard() {
             const s = subj(p.topic.subject_id);
             return (
               <li key={p.kind + p.topic.id} className="card flex items-center gap-3 !p-3">
-                <input type="checkbox" className="h-5 w-5 accent-indigo-500" onChange={() => tick(p)} />
+                <Check checked={false} onChange={() => tick(p)} color={s?.color} label={`Mark ${p.topic.title} done`} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm">{p.topic.title}</div>
                   <div className="text-xs text-slate-500">{s?.name}</div>

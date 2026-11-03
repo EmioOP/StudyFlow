@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import type { Session, Subject } from "@/lib/types";
 import { todayStr } from "@/lib/dates";
 import { AMBIENTS, sound, type Ambient } from "@/lib/sound";
+import { Switch } from "@/components/Check";
 
 type Mode = "focus" | "break";
 
@@ -121,10 +122,10 @@ function Timer() {
       <div className="card space-y-4">
         <h2 className="font-semibold">Sounds</h2>
         <div className="space-y-2">
-          <label className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm">
             <span>Clock ticking <span className="text-xs text-slate-500">(during focus)</span></span>
-            <input type="checkbox" className="h-5 w-5 accent-indigo-500" checked={tickOn} onChange={(e) => { sound.unlock(); setTickOn(e.target.checked); if (e.target.checked) sound.tick(tickVol); }} />
-          </label>
+            <Switch label="Clock ticking" checked={tickOn} onChange={(v) => { sound.unlock(); setTickOn(v); if (v) sound.tick(tickVol); }} />
+          </div>
           {tickOn && <input type="range" min={0.1} max={1} step={0.05} value={tickVol} onChange={(e) => setTickVol(+e.target.value)} className="w-full accent-indigo-500" aria-label="Tick volume" />}
         </div>
         <div className="space-y-2">

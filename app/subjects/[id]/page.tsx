@@ -9,6 +9,8 @@ import { supabase } from "@/lib/supabase";
 import type { Exam, Module, Session, Subject, Topic } from "@/lib/types";
 import { MAX_REVISIONS, nextRevisionDate, percent } from "@/lib/progress";
 import { daysUntil, fmtDate, todayStr } from "@/lib/dates";
+import { Check } from "@/components/Check";
+import { Icon } from "@/components/Icons";
 
 const LEVEL = ["", "Low", "Med", "High"];
 
@@ -81,9 +83,9 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
     const due = t.done && t.next_revision_at && t.next_revision_at <= todayStr();
     return (
       <li className="flex flex-wrap items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <input type="checkbox" className="h-5 w-5 accent-indigo-500" checked={t.done} onChange={() => toggle(t)} />
+        <Check checked={t.done} onChange={() => toggle(t)} color={subject.color} label={`Mark ${t.title} done`} />
         <span className={`min-w-0 flex-1 text-sm ${t.done ? "text-slate-400 line-through" : ""}`}>{t.title}</span>
-        {due && <button className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800" onClick={() => revised(t)}>Revise now ✓</button>}
+        {due && <button className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800" onClick={() => revised(t)}>Revise now</button>}
         {t.done && !due && t.revision_count > 0 && <span className="text-[10px] text-slate-400">revised {t.revision_count}/{MAX_REVISIONS}</span>}
         <select title="Priority" className="rounded-lg border border-slate-200 bg-transparent px-1 text-[11px] dark:border-slate-700" value={t.priority} onChange={(e) => upd(t, { priority: +e.target.value })}>
           {[1, 2, 3].map((n) => <option key={n} value={n}>P: {LEVEL[n]}</option>)}
@@ -91,7 +93,7 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
         <select title="Difficulty" className="rounded-lg border border-slate-200 bg-transparent px-1 text-[11px] dark:border-slate-700" value={t.difficulty} onChange={(e) => upd(t, { difficulty: +e.target.value })}>
           {[1, 2, 3].map((n) => <option key={n} value={n}>D: {LEVEL[n]}</option>)}
         </select>
-        <button className="text-slate-300 hover:text-red-500" onClick={async () => { await supabase().from("topics").delete().eq("id", t.id); load(); }}>✕</button>
+        <button aria-label="Delete topic" className="rounded-md p-1 text-slate-300 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950" onClick={async () => { await supabase().from("topics").delete().eq("id", t.id); load(); }}><Icon name="trash" size={16} /></button>
       </li>
     );
   };
@@ -105,8 +107,8 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
             <p className="text-xs text-slate-500">{subject.code}{exam ? ` · Exam ${fmtDate(exam.exam_date)} (${daysUntil(exam.exam_date)} days)` : " · No exam date set"} · {Math.round(total / 6) / 10} h studied</p>
           </div>
           <div className="flex gap-1">
-            <button className="btn-ghost !px-2 text-xs" onClick={() => setPub(!pub)}>Share</button>
-            <button className="btn-ghost !px-2 text-xs" onClick={removeSubject}>Delete</button>
+            <button className="btn-ghost !px-2 text-xs" onClick={() => setPub(!pub)}><Icon name="share" size={15} />Share</button>
+            <button className="btn-ghost !px-2 text-xs" onClick={removeSubject}><Icon name="trash" size={15} />Delete</button>
           </div>
         </div>
         <ProgressBar value={percent(topics)} color={subject.color} />
@@ -141,7 +143,7 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
                 <ul>{mt.map((t) => <TopicRow key={t.id} t={t} />)}</ul>
                 <form onSubmit={(e) => { e.preventDefault(); addTopic(m.id); }} className="flex gap-2 pt-1">
                   <input className="input" placeholder="Add topic to this module" value={newTopic} onChange={(e) => setNewTopic(e.target.value)} />
-                  <button className="btn-ghost">+</button>
+                  <button className="btn-ghost" aria-label="Add topic"><Icon name="plus" size={18} /></button>
                 </form>
               </section>
             );

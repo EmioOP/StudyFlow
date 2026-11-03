@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Material, Note, Topic } from "@/lib/types";
+import { Icon } from "@/components/Icons";
 
 export default function SubjectNotes({ subjectId, topics, userId }: { subjectId: string; topics: Topic[]; userId: string }) {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -59,7 +60,7 @@ export default function SubjectNotes({ subjectId, topics, userId }: { subjectId:
             <li key={m.id} className="card flex items-center gap-2 !p-2.5 text-sm">
               <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase dark:bg-slate-800">{m.kind === "pyq" ? "PYQ" : "Notes"}</span>
               <button className="min-w-0 flex-1 truncate text-left underline-offset-2 hover:underline" onClick={() => open(m)}>{m.title}</button>
-              <button className="text-slate-400" onClick={() => removeFile(m)}>✕</button>
+              <button aria-label="Delete file" className="rounded-md p-1 text-slate-400 hover:text-red-500" onClick={() => removeFile(m)}><Icon name="trash" size={16} /></button>
             </li>
           ))}
         </ul>
@@ -79,7 +80,7 @@ export default function SubjectNotes({ subjectId, topics, userId }: { subjectId:
         {notes.map((n) => (
           <div key={n.id} className="card text-sm">
             <div className="flex items-start justify-between"><div className="font-medium">{n.title}</div>
-              <button className="text-slate-400" onClick={async () => { await supabase().from("notes").delete().eq("id", n.id); load(); }}>✕</button></div>
+              <button className="rounded-md p-1 text-slate-400 hover:text-red-500" onClick={async () => { await supabase().from("notes").delete().eq("id", n.id); load(); }} aria-label="Delete note"><Icon name="trash" size={16} /></button></div>
             {n.topic_id && <div className="text-xs text-slate-500">Topic: {topics.find((t) => t.id === n.topic_id)?.title}</div>}
             <p className="mt-1 whitespace-pre-wrap">{n.body}</p>
           </div>

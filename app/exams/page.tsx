@@ -4,6 +4,7 @@ import Shell from "@/components/Shell";
 import { supabase } from "@/lib/supabase";
 import type { Exam, Subject } from "@/lib/types";
 import { daysUntil, fmtDate } from "@/lib/dates";
+import { Icon } from "@/components/Icons";
 
 function Exams() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -51,7 +52,7 @@ function Exams() {
               </div>
               <div className="text-sm font-semibold">{d < 0 ? "Done" : d === 0 ? "Today" : `${d}d`}</div>
               <button className="btn-ghost !px-2" onClick={() => edit(x)}>Edit</button>
-              <button className="btn-ghost !px-2" onClick={async () => { await supabase().from("exams").delete().eq("id", x.id); load(); }}>✕</button>
+              <button className="btn-ghost !px-2" onClick={async () => { await supabase().from("exams").delete().eq("id", x.id); load(); }} aria-label="Delete exam"><Icon name="trash" size={16} /></button>
             </li>
           );
         })}

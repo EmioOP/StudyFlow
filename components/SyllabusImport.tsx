@@ -4,6 +4,7 @@ import { parseSyllabus } from "@/lib/parseSyllabus";
 import { pdfToText } from "@/lib/pdfText";
 import { saveSyllabus } from "@/lib/saveSyllabus";
 import type { ParsedModule } from "@/lib/types";
+import { Icon } from "@/components/Icons";
 
 export default function SyllabusImport({ subjectId, onSaved }: { subjectId: string; onSaved: () => void }) {
   const [text, setText] = useState("");
@@ -50,7 +51,7 @@ export default function SyllabusImport({ subjectId, onSaved }: { subjectId: stri
               <div className="text-sm font-medium">{m.title}</div>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {m.topics.map((t, ti) => !removed.has(key(mi, ti)) && (
-                  <button key={ti} title="Remove" onClick={() => setRemoved(new Set(removed).add(key(mi, ti)))} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-red-100 dark:bg-slate-800">{t} ✕</button>
+                  <button key={ti} title="Remove" onClick={() => setRemoved(new Set(removed).add(key(mi, ti)))} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-red-100 dark:bg-slate-800">{t}<Icon name="close" size={12} className="ml-1 inline" /></button>
                 ))}
               </div>
             </div>
