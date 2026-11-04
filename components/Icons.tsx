@@ -13,6 +13,9 @@ const PATHS = {
   upload: <><path d="M12 15.5V4M7.5 8.5 12 4l4.5 4.5" /><path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" /></>,
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   logout: <><path d="M9.5 4.5h-3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3" /><path d="M14 8l4 4-4 4M18 12H9.5" /></>,
+  more: <><circle cx="5.5" cy="12" r="1.3" fill="currentColor" /><circle cx="12" cy="12" r="1.3" fill="currentColor" /><circle cx="18.5" cy="12" r="1.3" fill="currentColor" /></>,
+  chevron: <path d="m6.5 9.5 5.5 5.5 5.5-5.5" />,
+  sparkle: <path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9L12 3.5ZM18.5 16l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" />,
   download: <><path d="M12 4v11.5M7.5 11 12 15.5 16.5 11" /><path d="M4.5 18v.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V18" /></>,
 } as const;
 

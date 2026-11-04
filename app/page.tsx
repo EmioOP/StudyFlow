@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 import type { Exam, Session, Subject, Topic } from "@/lib/types";
 import { dailyPlan, percent, nextRevisionDate, MAX_REVISIONS } from "@/lib/progress";
 import { daysUntil, fmtDate, todayStr } from "@/lib/dates";
+import { Icon } from "@/components/Icons";
+import { PageSkeleton } from "@/components/Skeleton";
 import { Check } from "@/components/Check";
 
 function Dashboard() {
@@ -14,6 +16,7 @@ function Dashboard() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const load = useCallback(async () => {
     const sb = supabase();
@@ -25,6 +28,7 @@ function Dashboard() {
     ]);
     setSubjects((s.data ?? []) as Subject[]); setTopics((t.data ?? []) as Topic[]);
     setExams((e.data ?? []) as Exam[]); setSessions((ss.data ?? []) as Session[]);
+    setLoaded(true);
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -44,17 +48,68 @@ function Dashboard() {
     load();
   }
 
+  if (!loaded) return <PageSkeleton />;
+
+  if (subjects.length === 0) {
+    return (
+      <div className="mx-auto max-w-xl space-y-6 pt-4 md:pt-12">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold leading-tight">Plan your exams in a minute</h1>
+          <p className="text-slate-500">Add a subject, give it its syllabus, and StudyFlow turns it into a checklist with a daily plan.</p>
+        </header>
+        <ol className="space-y-3">
+          {[
+            ["Add a subject", "Name it and set the exam date."],
+            ["Add the syllabus", "Paste the text or upload the PDF. Every topic becomes a checkbox."],
+            ["Tick topics off", "Your progress and today's plan update as you go."],
+          ].map(([t, d], i) => (
+            <li key={t} className="flex items-start gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand">{i + 1}</span>
+              <div><div className="font-medium">{t}</div><div className="text-sm text-slate-500">{d}</div></div>
+            </li>
+          ))}
+        </ol>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link href="/subjects/new" className="btn !py-3 text-base"><Icon name="plus" size={18} />Add your first subject</Link>
+          <Link href="/library" className="btn-ghost !py-3">Find a syllabus shared by classmates</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const noExam = subjects.filter((x) => !exams.some((e) => e.subject_id === x.id));
+  const noSyllabus = subjects.filter((x) => !topics.some((t) => t.subject_id === x.id));
+
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Home</h1>
+          <Link href="/subjects/new" className="btn"><Icon name="plus" size={16} />Add subject</Link>
+        </div>
         <p className="text-sm text-slate-500">Overall progress {percent(topics)}% · {todayMinutes} min today · {Math.round(weekMinutes / 60 * 10) / 10} h this week</p>
         <div className="mt-2"><ProgressBar value={percent(topics)} /></div>
       </header>
 
+      {(noExam.length > 0 || noSyllabus.length > 0) && (
+        <section className="space-y-2">
+          <h2 className="font-semibold">Finish setting up</h2>
+          {noSyllabus.map((x) => (
+            <Link key={"s" + x.id} href={`/subjects/${x.id}`} className="card flex items-center justify-between !p-3 text-sm">
+              <span><b>{x.name}</b> has no syllabus yet</span><span className="text-brand">Add syllabus</span>
+            </Link>
+          ))}
+          {noExam.length > 0 && (
+            <Link href="/exams" className="card flex items-center justify-between !p-3 text-sm">
+              <span>{noExam.length === 1 ? <><b>{noExam[0].name}</b> has no exam date</> : <>{noExam.length} subjects have no exam date</>}</span><span className="text-brand">Set dates</span>
+            </Link>
+          )}
+        </section>
+      )}
+
       <section>
         <h2 className="mb-2 font-semibold">Upcoming exams</h2>
-        {upcoming.length === 0 && <p className="card text-sm text-slate-500">No upcoming exams. <Link className="text-brand underline" href="/exams">Add your timetable</Link>.</p>}
+        {upcoming.length === 0 && <p className="card text-sm text-slate-500">No upcoming exams. <Link className="text-brand underline" href="/exams">Set your exam dates</Link> to get a countdown and daily plan.</p>}
         <div className="grid gap-3 sm:grid-cols-2">
           {upcoming.map((e) => {
             const s = subj(e.subject_id); if (!s) return null;
@@ -75,7 +130,7 @@ function Dashboard() {
 
       <section>
         <h2 className="mb-2 font-semibold">Today&apos;s plan</h2>
-        {plan.length === 0 && <p className="card text-sm text-slate-500">Nothing planned. Add exam dates and syllabus topics to get a daily plan.</p>}
+        {plan.length === 0 && <p className="card text-sm text-slate-500">Nothing planned for today. The plan appears once a subject has both an exam date and syllabus topics.</p>}
         <ul className="space-y-2">
           {plan.map((p) => {
             const s = subj(p.topic.subject_id);

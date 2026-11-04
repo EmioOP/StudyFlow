@@ -3,50 +3,55 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import Shell from "@/components/Shell";
 import ProgressBar from "@/components/ProgressBar";
+import { Icon } from "@/components/Icons";
+import { PageSkeleton } from "@/components/Skeleton";
 import { supabase } from "@/lib/supabase";
 import type { Exam, Subject, Topic } from "@/lib/types";
 import { percent } from "@/lib/progress";
 import { daysUntil, fmtDate } from "@/lib/dates";
 
-const COLORS = ["#6366f1", "#ec4899", "#f59e0b", "#10b981", "#06b6d4", "#ef4444", "#8b5cf6", "#84cc16"];
-
 function Subjects() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [topics, setTopics] = useState<Pick<Topic, "subject_id" | "done">[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
-  const [name, setName] = useState(""); const [code, setCode] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   const load = useCallback(async () => {
     const sb = supabase();
     const [s, t, e] = await Promise.all([sb.from("subjects").select("*").order("created_at"), sb.from("topics").select("subject_id,done"), sb.from("exams").select("*")]);
     setSubjects((s.data ?? []) as Subject[]); setTopics((t.data ?? []) as any); setExams((e.data ?? []) as Exam[]);
+    setLoaded(true);
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  async function add(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    await supabase().from("subjects").insert({ name: name.trim(), code: code.trim() || null, color: COLORS[subjects.length % COLORS.length] });
-    setName(""); setCode(""); load();
-  }
-
+  if (!loaded) return <PageSkeleton />;
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Subjects</h1>
-      <form onSubmit={add} className="card flex flex-col gap-2 sm:flex-row">
-        <input className="input" placeholder="Subject name (e.g. Design and Analysis of Algorithms)" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="input sm:w-32" placeholder="Code" value={code} onChange={(e) => setCode(e.target.value)} />
-        <button className="btn">Add</button>
-      </form>
-      <p className="text-xs text-slate-500">Tip: you can also import a ready-made subject with syllabus from the <Link className="underline" href="/library">shared library</Link>.</p>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold">Subjects</h1>
+        <Link href="/subjects/new" className="btn"><Icon name="plus" size={16} />Add subject</Link>
+      </div>
+      {subjects.length === 0 && (
+        <div className="card space-y-3 text-center">
+          <p className="font-medium">No subjects yet</p>
+          <p className="text-sm text-slate-500">Add your first subject, or start from a syllabus a classmate has shared.</p>
+          <div className="flex flex-col justify-center gap-2 sm:flex-row">
+            <Link href="/subjects/new" className="btn">Add a subject</Link>
+            <Link href="/library" className="btn-ghost">Browse the library</Link>
+          </div>
+        </div>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         {subjects.map((s) => {
           const st = topics.filter((t) => t.subject_id === s.id);
           const ex = exams.find((e) => e.subject_id === s.id);
           return (
             <Link key={s.id} href={`/subjects/${s.id}`} className="card block space-y-2" style={{ borderLeft: `4px solid ${s.color}` }}>
-              <div className="font-medium">{s.name} {s.code && <span className="text-xs text-slate-500">· {s.code}</span>}</div>
-              <div className="text-xs text-slate-500">{ex ? `${fmtDate(ex.exam_date)} · ${daysUntil(ex.exam_date)} days` : "No exam date"} · {st.filter((t) => t.done).length}/{st.length} topics</div>
+              <div className="font-medium">{s.name} {s.code && <span className="text-xs font-normal text-slate-500">{s.code}</span>}</div>
+              <div className="text-xs text-slate-500">
+                {ex ? `${fmtDate(ex.exam_date)} (${daysUntil(ex.exam_date)} days)` : "No exam date"}
+                {" · "}{st.length ? `${st.filter((t) => t.done).length} of ${st.length} topics done` : "No syllabus yet"}
+              </div>
               <ProgressBar value={percent(st)} color={s.color} />
             </Link>
           );

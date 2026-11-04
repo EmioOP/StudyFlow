@@ -58,7 +58,7 @@ export default function SubjectNotes({ subjectId, topics, userId }: { subjectId:
         <ul className="space-y-1.5">
           {files.map((m) => (
             <li key={m.id} className="card flex items-center gap-2 !p-2.5 text-sm">
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase dark:bg-slate-800">{m.kind === "pyq" ? "PYQ" : "Notes"}</span>
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase dark:bg-slate-800">{m.kind === "pyq" ? "Paper" : "Notes"}</span>
               <button className="min-w-0 flex-1 truncate text-left underline-offset-2 hover:underline" onClick={() => open(m)}>{m.title}</button>
               <button aria-label="Delete file" className="rounded-md p-1 text-slate-400 hover:text-red-500" onClick={() => removeFile(m)}><Icon name="trash" size={16} /></button>
             </li>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase, isConfigured } from "@/lib/supabase";
 import { Icon, Logo } from "@/components/Icons";
+import { PageSkeleton } from "@/components/Skeleton";
 
 const NAV = [
   { href: "/", label: "Home", icon: "home" as const },
@@ -43,7 +44,7 @@ export default function Shell({ children }: { children: (user: User) => React.Re
       </main>
     );
   }
-  if (!ready || !user) return <div className="p-8 text-center text-sm text-slate-500">Loading…</div>;
+  if (!ready || !user) return <main className="mx-auto max-w-4xl p-6"><PageSkeleton /></main>;
   const active = (h: string) => (h === "/" ? path === "/" : path.startsWith(h));
   return (
     <div className="min-h-screen md:flex">
