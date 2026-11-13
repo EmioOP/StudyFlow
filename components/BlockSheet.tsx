@@ -50,7 +50,7 @@ export default function BlockSheet(p: Props) {
                   <div className="flex flex-wrap gap-2">
                     {p.subjects.map((s) => (
                       <button key={s.id} type="button" aria-pressed={subjectId === s.id} onClick={() => { setSubjectId(s.id); setTopicId(""); }}
-                        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${subjectId === s.id ? "border-transparent text-white" : "border-slate-300 dark:border-slate-700"}`}
+                        className={`flex max-w-full items-center gap-2 break-words rounded-xl border px-3 py-2 text-left text-sm ${subjectId === s.id ? "border-transparent text-white" : "border-slate-300 dark:border-slate-700"}`}
                         style={subjectId === s.id ? { background: s.color } : undefined}>
                         <span className="h-2.5 w-2.5 rounded-full" style={{ background: subjectId === s.id ? "#fff" : s.color }} />{s.name}
                       </button>

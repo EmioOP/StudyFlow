@@ -96,7 +96,7 @@ function Preview({ parsed, removed, setRemoved, total }: {
           <div className="mt-1 flex flex-wrap gap-1.5">
             {m.topics.map((t, ti) => !removed.has(`${mi}:${ti}`) && (
               <button type="button" key={ti} title="Remove this topic" onClick={() => setRemoved(new Set(removed).add(`${mi}:${ti}`))}
-                className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-red-100 dark:bg-slate-800 dark:hover:bg-red-950">
+                className="inline-flex max-w-full items-center gap-1 break-words rounded-full bg-slate-100 text-left px-2.5 py-1 text-xs hover:bg-red-100 dark:bg-slate-800 dark:hover:bg-red-950">
                 {t}<Icon name="close" size={12} />
               </button>
             ))}

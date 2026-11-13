@@ -51,7 +51,7 @@ function Subjects() {
           const ex = exams.find((e) => e.subject_id === s.id);
           return (
             <Link key={s.id} href={`/subjects/${s.id}`} className="card block space-y-2" style={{ borderLeft: `4px solid ${s.color}` }}>
-              <div className="font-medium">{s.name} {s.code && <span className="text-xs font-normal text-slate-500">{s.code}</span>}</div>
+              <div className="break-words font-medium">{s.name} {s.code && <span className="text-xs font-normal text-slate-500">{s.code}</span>}</div>
               <div className="text-xs text-slate-500">
                 {ex ? `${fmtDate(ex.exam_date)} (${daysUntil(ex.exam_date)} days)` : "No exam date"}
                 {" · "}{st.length ? `${st.filter((t) => t.done).length} of ${st.length} topics done` : "No syllabus yet"}

@@ -195,7 +195,7 @@ function Plan() {
         {rows.map(([hour, row]) => (
           <div key={hour} className="flex items-stretch gap-3">
             <div className="w-12 shrink-0 pt-4 text-right text-xs text-slate-500">{fmtTime(hour * 60).replace(":00", "")}</div>
-            <div className="flex flex-1 gap-2">
+            <div className="flex min-w-0 flex-1 gap-2">
               {row.map((c) => {
                 const b = blockAt(c); const s = sub(b?.subject_id ?? null);
                 const isNow = isToday && nowMin >= c.start && nowMin < c.end;
@@ -210,17 +210,17 @@ function Plan() {
                 return (
                   <button key={c.start} data-cell={c.start} data-now={isNow ? "1" : undefined} onClick={() => setSheet(c.start)}
                     aria-label={`${fmtTime(c.start)} ${b ? `${s?.name ?? "study"} ${b.status}` : "free"}`}
-                    className={`relative h-16 min-w-0 flex-1 rounded-2xl px-2 text-left text-xs transition active:scale-95 ${cls} ${isNow ? "ring-2 ring-brand ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950" : ""} ${!b && past ? "opacity-50" : ""} ${b?.status === "done" ? "sf-done" : ""}`}
+                    className={`relative h-16 min-w-0 flex-1 overflow-hidden rounded-2xl px-2 text-left text-xs transition active:scale-95 ${cls} ${isNow ? "ring-2 ring-brand ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950" : ""} ${!b && past ? "opacity-50" : ""} ${b?.status === "done" ? "sf-done" : ""}`}
                     style={style}>
                     {!b && <span className="flex h-full items-center justify-center text-slate-400"><Icon name="plus" size={16} /></span>}
                     {b && (
-                      <span className="flex h-full flex-col justify-center gap-0.5">
-                        <span className="flex items-center gap-1 font-semibold">{b.status === "done" && <Icon name="check" size={14} strokeWidth={3} />}<span className="truncate">{s?.name ?? "Study"}</span></span>
+                      <span className="flex h-full min-w-0 flex-col justify-center gap-0.5">
+                        <span className="flex min-w-0 items-center gap-1 font-semibold">{b.status === "done" && <Icon name="check" size={14} strokeWidth={3} />}<span className="truncate">{s?.name ?? "Study"}</span></span>
                         <span className={`truncate ${b.status === "done" ? "text-white/80" : "text-slate-500"}`}>{fmtTime(c.start).replace(" ", "").toLowerCase()}</span>
                       </span>
                     )}
-                    {combo >= 2 && <span className="absolute -right-1 -top-1.5 rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-950">×{combo}</span>}
-                    {isNow && <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-brand" />}
+                    {combo >= 2 && <span className="absolute right-1 top-1 rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-950">×{combo}</span>}
+                    {isNow && <span className="absolute left-1 top-1 h-2 w-2 rounded-full bg-brand" />}
                   </button>
                 );
               })}

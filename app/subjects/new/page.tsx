@@ -65,11 +65,11 @@ function NewSubject() {
           <input id="name" autoFocus className="input !py-3 text-base" placeholder="e.g. Design and Analysis of Algorithms" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="flex gap-3">
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <label className="label" htmlFor="code">Subject code <span className="font-normal">(optional)</span></label>
             <input id="code" className="input" placeholder="e.g. CST306" value={code} onChange={(e) => setCode(e.target.value)} />
           </div>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <label className="label" htmlFor="date">Exam date <span className="font-normal">(optional)</span></label>
             <input id="date" type="date" className="input" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>

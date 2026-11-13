@@ -43,8 +43,8 @@ function Library({ userId }: { userId: string }) {
       {shown.map((l) => (
         <div key={l.id} className="card space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <div>
-              <div className="font-medium">{l.name} {l.code && <span className="text-xs text-slate-500">· {l.code}</span>}</div>
+            <div className="min-w-0">
+              <div className="break-words font-medium">{l.name} {l.code && <span className="text-xs text-slate-500">· {l.code}</span>}</div>
               <div className="text-xs text-slate-500">{[l.branch, l.semester && `Sem ${l.semester}`].filter(Boolean).join(" · ")} · by {l.owner_name ?? "a student"} · {l.imports} imports · {l.syllabus.reduce((a, m) => a + m.topics.length, 0)} topics</div>
             </div>
             <div className="flex gap-1">

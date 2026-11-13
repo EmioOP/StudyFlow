@@ -135,7 +135,7 @@ function Dashboard() {
             return (
               <Link key={e.id} href={`/subjects/${s.id}`} className="card block space-y-2" style={{ borderLeft: `4px solid ${s.color}` }}>
                 <div className="flex items-start justify-between">
-                  <div><div className="font-medium">{s.name}</div><div className="text-xs text-slate-500">{fmtDate(e.exam_date)}</div></div>
+                  <div className="min-w-0 break-words"><div className="font-medium">{s.name}</div><div className="text-xs text-slate-500">{fmtDate(e.exam_date)}</div></div>
                   <div className="text-right"><div className="text-2xl font-bold leading-none">{d}</div><div className="text-[10px] uppercase text-slate-500">{d === 1 ? "day" : "days"} left</div></div>
                 </div>
                 <ProgressBar value={percent(st)} color={s.color} />

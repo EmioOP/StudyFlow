@@ -61,7 +61,7 @@ export default function Shell({ children }: { children: (user: User) => React.Re
         </nav>
         <button className="btn-ghost mt-8 w-full" onClick={async () => { await supabase().auth.signOut(); location.href = "/login"; }}><Icon name="logout" size={16} />Sign out</button>
       </aside>
-      <main className="mx-auto w-full max-w-4xl flex-1 p-4 pb-24 md:p-8 md:pb-8">{children(user)}</main>
+      <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 p-4 pb-24 md:p-8 md:pb-8">{children(user)}</main>
       <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 md:hidden">
         {NAV.filter((n) => !n.desktopOnly).map((n) => (
           <Link key={n.href} href={n.href} className={`flex flex-1 flex-col items-center py-2 text-[11px] ${active(n.href) ? "text-brand" : "text-slate-500"}`}>

@@ -119,7 +119,7 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
       <li className="rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50">
         <div className="flex items-center gap-3 px-2 py-2">
           <Check checked={t.done} onChange={() => toggle(t)} color={subject.color} label={`Mark ${t.title} done`} />
-          <span className={`min-w-0 flex-1 text-sm ${t.done ? "text-slate-400 line-through" : ""}`}>{t.title}</span>
+          <span className={`min-w-0 flex-1 break-words text-sm ${t.done ? "text-slate-400 line-through" : ""}`}>{t.title}</span>
           {t.priority === 3 && !t.done && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-950 dark:text-red-300">Important</span>}
           {due && <button className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800" onClick={() => revised(t)}>Revise now</button>}
           {t.done && !due && t.revision_count > 0 && <span className="text-[10px] text-slate-400">revised {t.revision_count}/{MAX_REVISIONS}</span>}
@@ -140,8 +140,8 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
     <div className="space-y-4">
       <header className="card space-y-2" style={{ borderLeft: `4px solid ${subject.color}` }}>
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <h1 className="text-xl font-bold">{subject.name}</h1>
+          <div className="min-w-0">
+            <h1 className="break-words text-xl font-bold">{subject.name}</h1>
             <p className="text-xs text-slate-500">{subject.code && `${subject.code} · `}{topics.filter((t) => t.done).length} of {topics.length} topics done · {Math.round(total / 6) / 10} h studied</p>
           </div>
           <div className="flex gap-1">
@@ -166,7 +166,7 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
         {msg && <p className="text-xs text-emerald-600">{msg}</p>}
       </header>
 
-      <div className="flex gap-1 overflow-x-auto">
+      <div className="flex flex-wrap gap-1.5">
         {([["topics", "Topics"], ["import", "Import"], ["notes", "Notes & papers"], ["log", "Study log"]] as const).map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-sm ${tab === k ? "bg-brand text-white" : "btn-ghost"}`}>{l}</button>
         ))}
@@ -186,7 +186,7 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
             return (
               <section key={m.id} className="card space-y-1">
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-semibold">{m.title}</h3>
+                  <h3 className="min-w-0 break-words font-semibold">{m.title}</h3>
                   <span className="text-xs text-slate-500">{mt.filter((t) => t.done).length}/{mt.length}</span>
                 </div>
                 <ProgressBar value={percent(mt)} color={subject.color} label={false} />
