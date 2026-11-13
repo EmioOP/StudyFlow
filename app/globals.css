@@ -12,3 +12,15 @@
   .input { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900; }
   .label { @apply mb-1 block text-xs font-medium text-slate-500; }
 }
+
+@keyframes sf-float { 0% { opacity: 0; transform: translate(-50%, 0) scale(.8); } 15% { opacity: 1; transform: translate(-50%, -12px) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -72px) scale(1); } }
+@keyframes sf-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes sf-toast { 0% { opacity: 0; transform: translate(-50%, 12px); } 12%, 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
+@keyframes sf-flicker { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.08) rotate(2deg); } }
+@keyframes sf-done { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.sf-float { animation: sf-float 1.4s ease-out forwards; }
+.sf-pop { animation: sf-pop .45s cubic-bezier(.2, 1.2, .4, 1) both; }
+.sf-toast { animation: sf-toast 3.2s ease-in-out forwards; }
+.sf-flicker { animation: sf-flicker 1.6s ease-in-out infinite; transform-origin: 50% 90%; }
+.sf-done { animation: sf-done .5s ease-out; }
+@media (prefers-reduced-motion: reduce) { .sf-float, .sf-pop, .sf-toast, .sf-flicker, .sf-done { animation: none; opacity: 1; } .sf-float { opacity: 1; transform: translate(-50%, -12px); } }

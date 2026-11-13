@@ -5,6 +5,9 @@ import { supabase } from "@/lib/supabase";
 import type { Session, Subject } from "@/lib/types";
 import { todayStr } from "@/lib/dates";
 import { AMBIENTS, sound, type Ambient } from "@/lib/sound";
+import { awardFlow } from "@/lib/rewardStore";
+import { burst, toast } from "@/lib/celebrate";
+import { timerXp } from "@/lib/rewards";
 import { Switch } from "@/components/Check";
 
 type Mode = "focus" | "break";
@@ -63,7 +66,10 @@ function Timer() {
 
   const finish = useCallback(async (m: Mode, minutes: number) => {
     if (m === "focus" && minutes > 0) {
-      await supabase().from("study_sessions").insert({ subject_id: subjectId || null, minutes });
+      const xp = timerXp(minutes);
+      await awardFlow(async () => { await supabase().from("study_sessions").insert({ subject_id: subjectId || null, minutes, xp }); });
+      burst({ x: window.innerWidth / 2, y: window.innerHeight / 3, count: 50 });
+      toast(`+${xp} XP · ${minutes} min of focus saved`);
       load();
     }
   }, [subjectId, load]);

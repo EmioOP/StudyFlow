@@ -9,6 +9,8 @@ import { dailyPlan, percent, nextRevisionDate, MAX_REVISIONS } from "@/lib/progr
 import { daysUntil, fmtDate, todayStr } from "@/lib/dates";
 import { Icon } from "@/components/Icons";
 import { PageSkeleton } from "@/components/Skeleton";
+import { loadStats } from "@/lib/rewardStore";
+import type { Stats } from "@/lib/rewards";
 import { Check } from "@/components/Check";
 
 function Dashboard() {
@@ -17,6 +19,8 @@ function Dashboard() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [rs, setRs] = useState<Stats | null>(null);
+  useEffect(() => { loadStats().then(({ stats }) => setRs(stats)).catch(() => {}); }, []);
 
   const load = useCallback(async () => {
     const sb = supabase();
@@ -91,6 +95,19 @@ function Dashboard() {
         <div className="mt-2"><ProgressBar value={percent(topics)} /></div>
       </header>
 
+      {rs && (
+        <Link href="/plan" className="card flex items-center gap-4 !p-3">
+          <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
+            <span className="text-[9px] uppercase leading-none opacity-80">Lv</span><span className="text-lg font-extrabold leading-none">{rs.level.level}</span>
+          </div>
+          <div className="min-w-0 flex-1 space-y-1">
+            <div className="flex items-center justify-between text-sm"><span className="font-medium">{rs.level.title}</span><span className="inline-flex items-center gap-1 font-semibold text-orange-500"><Icon name="flame" size={15} className={rs.streak > 0 ? "sf-flicker" : ""} />{rs.streak}</span></div>
+            <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"><div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" style={{ width: `${rs.level.pct}%` }} /></div>
+            <div className="text-xs text-slate-500">{rs.blocksToday} of {rs.goal} study blocks today · <span className="text-brand">Plan your day</span></div>
+          </div>
+        </Link>
+      )}
+
       {(noExam.length > 0 || noSyllabus.length > 0) && (
         <section className="space-y-2">
           <h2 className="font-semibold">Finish setting up</h2>
@@ -108,7 +125,7 @@ function Dashboard() {
       )}
 
       <section>
-        <h2 className="mb-2 font-semibold">Upcoming exams</h2>
+        <div className="mb-2 flex items-center justify-between"><h2 className="font-semibold">Upcoming exams</h2><Link href="/exams" className="text-xs text-brand underline">Edit dates</Link></div>
         {upcoming.length === 0 && <p className="card text-sm text-slate-500">No upcoming exams. <Link className="text-brand underline" href="/exams">Set your exam dates</Link> to get a countdown and daily plan.</p>}
         <div className="grid gap-3 sm:grid-cols-2">
           {upcoming.map((e) => {

@@ -70,6 +70,23 @@ class SoundEngine {
     });
   }
 
+  /** Rising arpeggio for finished blocks; longer when `big` (goal reached, level up). */
+  reward(big = false) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    const notes = big ? [523.25, 659.25, 783.99, 1046.5, 1318.5] : [659.25, 783.99, 1046.5];
+    notes.forEach((hz, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "triangle"; o.frequency.value = hz;
+      const s = t + i * 0.09;
+      g.gain.setValueAtTime(0, s);
+      g.gain.linearRampToValueAtTime(0.22, s + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, s + (big ? 0.9 : 0.5));
+      o.connect(g).connect(this.master);
+      o.start(s); o.stop(s + 1);
+    });
+  }
+
   setAmbient(kind: Ambient, volume: number) {
     this.fadeOutAmbient();
     if (!this.ctx || kind === "off") return;

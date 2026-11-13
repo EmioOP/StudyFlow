@@ -31,6 +31,10 @@ function Subjects() {
         <h1 className="text-2xl font-bold">Subjects</h1>
         <Link href="/subjects/new" className="btn"><Icon name="plus" size={16} />Add subject</Link>
       </div>
+      <div className="flex gap-4 text-sm">
+        <Link href="/exams" className="text-brand underline">Exam dates</Link>
+        <Link href="/library" className="text-brand underline">Shared syllabi</Link>
+      </div>
       {subjects.length === 0 && (
         <div className="card space-y-3 text-center">
           <p className="font-medium">No subjects yet</p>

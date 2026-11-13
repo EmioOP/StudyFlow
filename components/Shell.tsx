@@ -4,15 +4,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase, isConfigured } from "@/lib/supabase";
-import { Icon, Logo } from "@/components/Icons";
+import { Icon, Logo, type IconName } from "@/components/Icons";
 import { PageSkeleton } from "@/components/Skeleton";
 
-const NAV = [
-  { href: "/", label: "Home", icon: "home" as const },
-  { href: "/exams", label: "Exams", icon: "calendar" as const },
-  { href: "/subjects", label: "Subjects", icon: "book" as const },
-  { href: "/timer", label: "Timer", icon: "timer" as const },
-  { href: "/library", label: "Library", icon: "library" as const },
+const NAV: { href: string; label: string; icon: IconName; desktopOnly?: boolean }[] = [
+  { href: "/", label: "Home", icon: "home" },
+  { href: "/plan", label: "Plan", icon: "grid" },
+  { href: "/exams", label: "Exams", icon: "calendar", desktopOnly: true },
+  { href: "/subjects", label: "Subjects", icon: "book" },
+  { href: "/timer", label: "Timer", icon: "timer" },
+  { href: "/rewards", label: "Rewards", icon: "trophy" },
+  { href: "/library", label: "Library", icon: "library", desktopOnly: true },
 ];
 
 export function useUser() {
@@ -61,7 +63,7 @@ export default function Shell({ children }: { children: (user: User) => React.Re
       </aside>
       <main className="mx-auto w-full max-w-4xl flex-1 p-4 pb-24 md:p-8 md:pb-8">{children(user)}</main>
       <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 md:hidden">
-        {NAV.map((n) => (
+        {NAV.filter((n) => !n.desktopOnly).map((n) => (
           <Link key={n.href} href={n.href} className={`flex flex-1 flex-col items-center py-2 text-[11px] ${active(n.href) ? "text-brand" : "text-slate-500"}`}>
             <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${active(n.href) ? "bg-brand/15" : ""}`}><Icon name={n.icon} size={21} /></span>{n.label}
           </Link>

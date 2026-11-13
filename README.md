@@ -12,6 +12,10 @@ notes & previous question papers, and a shared syllabus library. Next.js 15 + Su
 5. `cp .env.example .env.local` and fill in Project URL + anon key (Project settings → API).
 6. `npm install && npm run dev`, open http://localhost:3000.
 
+## Time blocks and rewards (added later)
+Run `supabase/migrations/002_time_blocks_rewards.sql` once in the SQL editor **before** deploying this version
+(the timer and plan pages write new columns/tables).
+
 ## Notes
 - Progress % = done topics ÷ total topics. Revisions are scheduled 3, 7 and 14 days after a topic is completed.
 - Daily plan = remaining topics ÷ days left before each exam (high priority/difficulty first) + due revisions.

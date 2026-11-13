@@ -1,4 +1,5 @@
 "use client";
+import { burst, centerOf } from "@/lib/celebrate";
 
 /** Round-cornered checkbox in the subject's colour; the tick draws itself when checked. */
 export function Check({ checked, onChange, color = "#6366f1", label, size = 24 }: {
@@ -6,7 +7,8 @@ export function Check({ checked, onChange, color = "#6366f1", label, size = 24 }
 }) {
   return (
     <button
-      type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}
+      type="button" role="checkbox" aria-checked={checked} aria-label={label}
+      onClick={(e) => { if (!checked) { const c = centerOf(e.currentTarget); burst({ ...c, count: 14, power: 0.6, color }); } onChange(); }}
       className="group relative shrink-0 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
       style={{ width: size, height: size, ["--tw-ring-color" as string]: color }}
     >

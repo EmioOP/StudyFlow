@@ -10,6 +10,7 @@ import type { Exam, Module, Session, Subject, Topic } from "@/lib/types";
 import { MAX_REVISIONS, nextRevisionDate, percent } from "@/lib/progress";
 import { daysUntil, fmtDate, todayStr } from "@/lib/dates";
 import { Check } from "@/components/Check";
+import { showModal, toast } from "@/lib/celebrate";
 import { Icon } from "@/components/Icons";
 import { PageSkeleton } from "@/components/Skeleton";
 import Link from "next/link";
@@ -68,9 +69,16 @@ function SubjectView({ userId, userName }: { userId: string; userName: string })
     setTopics((all) => all.map((x) => (x.id === t.id ? { ...x, ...patch } : x)));
     await supabase().from("topics").update(patch).eq("id", t.id);
   };
-  const toggle = (t: Topic) => t.done
-    ? upd(t, { done: false, revision_count: 0, next_revision_at: null })
-    : upd(t, { done: true, revision_count: 0, next_revision_at: nextRevisionDate(0, todayStr()) });
+  const toggle = (t: Topic) => {
+    if (t.done) return upd(t, { done: false, revision_count: 0, next_revision_at: null });
+    const rest = topics.filter((x) => x.id !== t.id);
+    if (rest.length >= 2 && rest.every((x) => x.done)) {
+      showModal({ kind: "subject", title: "Subject complete!", subtitle: `Every topic of ${subject?.name ?? "this subject"} is done. Time to revise.`, icon: "trophy", color: subject?.color });
+    } else if (t.module_id && rest.filter((x) => x.module_id === t.module_id).every((x) => x.done) && rest.some((x) => x.module_id === t.module_id)) {
+      toast(`Module complete: ${modules.find((m) => m.id === t.module_id)?.title ?? ""}`);
+    }
+    return upd(t, { done: true, revision_count: 0, next_revision_at: nextRevisionDate(0, todayStr()) });
+  };
   const revised = (t: Topic) => upd(t, { revision_count: t.revision_count + 1, next_revision_at: nextRevisionDate(t.revision_count + 1, todayStr()) });
 
   async function addTopic(moduleId: string | null) {
